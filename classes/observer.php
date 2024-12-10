@@ -31,7 +31,7 @@ global $CFG;
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 class observer {
-    public static function workflow_state_updated_bulk(workflow_state_updated_bulk $event): void {
+    public static function workflow_state_updated_bulk($event): void {
         $context = \context::instance_by_id($event->contextid);
         $userid = $event->relateduserid;
         $assign = new \assign($context, null, null);

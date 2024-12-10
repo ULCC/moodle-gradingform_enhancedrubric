@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = [
     [
-        'eventname' => workflow_state_updated_bulk::class,
+        'eventname' =>  '\mod_assign\event\workflow_state_updated',
         'callback' => '\gradingform_enhancedrubric\observer::workflow_state_updated_bulk',
     ],
 ];
