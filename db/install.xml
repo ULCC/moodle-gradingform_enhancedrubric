@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="grade/grading/form/enhancedrubric/db" VERSION="20221114" COMMENT="XMLDB file for Moodle rubrics"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="enhancedrubric_criteria" COMMENT="Stores the rows of the rubric grid.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="definitionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the form definition this criterion is part of"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Defines the order of the criterion in the rubric"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The criterion description"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the description field"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_definitionid" TYPE="foreign" FIELDS="definitionid" REFTABLE="grading_definitions" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="enhancedrubric_levels" COMMENT="Stores the columns of the rubric grid.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="criterionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The rubric criterion we are level of"/>
+        <FIELD NAME="score" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="The score for this level"/>
+        <FIELD NAME="min" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Whether or not this level is the minimum required"/>
+        <FIELD NAME="definition" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The optional text describing the level"/>
+        <FIELD NAME="definitionformat" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the definition field"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_criterionid" TYPE="foreign" FIELDS="criterionid" REFTABLE="enhancedrubric_criteria" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="enhancedrubric_fillings" COMMENT="Stores the data of how the rubric is filled by a particular rater">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the grading form instance"/>
+        <FIELD NAME="criterionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the criterion (row) in the rubric"/>
+        <FIELD NAME="levelid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If a particular level was selected during the assessment, its ID is stored here"/>
+        <FIELD NAME="remark" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Side note feedback regarding this particular criterion"/>
+        <FIELD NAME="remarkformat" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the remark field"/>
+        <FIELD NAME="section" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The section of the marking working workflow - initial, second or final"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_instanceid" TYPE="foreign" FIELDS="instanceid" REFTABLE="grading_instances" REFFIELDS="id"/>
+        <KEY NAME="fk_criterionid" TYPE="foreign" FIELDS="criterionid" REFTABLE="enhancedrubric_criteria" REFFIELDS="id"/>
+        <KEY NAME="uq_instance_criterion" TYPE="unique" FIELDS="instanceid, criterionid, section"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_levelid" UNIQUE="false" FIELDS="levelid" COMMENT="levelid acts as a foreign key but null values are allowed"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="enhancedrubric_history" COMMENT="Stores history of an assessment record for one gradable item assessed by one rater">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="definitionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the form definition this is instance of"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the grading form instance"/>
+        <FIELD NAME="raterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The ID of the user who did the assessment"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="This identifies the graded item within the grabable area"/>
+        <FIELD NAME="rawgrade" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5" COMMENT="The raw normalized grade 0.00000 - 100.00000 as a result of the most recent assessment"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The status of the assessment. By default the instance is under-assessment state"/>
+        <FIELD NAME="workflowstatus" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The status of marking workflow when this grade was saved"/>
+        <FIELD NAME="feedback" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Overall feedback from the rater for the author of the graded item"/>
+        <FIELD NAME="feedbackformat" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the feedback field"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp of when the assessment was most recently modified"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_instanceid" TYPE="foreign" FIELDS="instanceid" REFTABLE="grading_instances" REFFIELDS="id"/>
+        <KEY NAME="fk_definitionid" TYPE="foreign" FIELDS="definitionid" REFTABLE="grading_definitions" REFFIELDS="id"/>
+        <KEY NAME="fk_raterid" TYPE="foreign" FIELDS="raterid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="enhancedrubric_intcomments" COMMENT="Internal comments regarding grading and feedback">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="internalcomment" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="internalcommentformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

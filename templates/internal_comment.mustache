@@ -1,0 +1,48 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template gradingform_enhancedrubric/internal_comment
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * labelid: ID attribute for label
+    * fieldid: AD attribute of the filed that the label relates to
+    * labeltxt: Label text
+    * html: the html output for the custom form element
+
+    Example context (json):
+    {
+        "labelid": "id_internalcomment_label",
+        "fieldid": "id_internalcomment",
+        "labeltxt": "Internal comments:"
+        "html": "<!-- Output of  MoodleQuickForm_editor->toHtml() -->"
+    }
+}}
+
+<div id="enhancedrubric-advancedgrading-internalcomment" class="w-100 mt-5">
+    <div class="d-flex pb-2 pr-md-0">
+        <label id="{{labelid}}" class="w-100 d-inline word-break " for="{{fieldid}}">
+            {{labeltxt}}
+        </label>
+    </div>
+    {{{html}}}
+</div>
