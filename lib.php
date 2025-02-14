@@ -970,6 +970,13 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
         return true;
     }
 
+    public function submit_and_get_grade($elementvalue, $itemid) {
+        $elementvalue['itemid'] = $itemid;
+        $this->update($elementvalue);
+        $this->make_active();
+        return $this->get_grade();
+    }
+
     /**
      * Removes the attempt from the gradingform_guide_fillings table
      * @param array $data the attempt data
@@ -1251,12 +1258,14 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
         $curscore = 0;
         $meetsallminscores = true;
 
-        foreach ($grade['section'][$section]['criteria'] as $id => $record) {
-            $score = $this->get_controller()->get_definition()->enhancedrubric_criteria[$id]['levels'][$record['levelid']]['score'];
-            if ($score < $minscores[$id]) {
-                $meetsallminscores = false;
+        if(!empty($grade) && $section !=0) {
+            foreach ($grade['section'][$section]['criteria'] as $id => $record) {
+                $score = $this->get_controller()->get_definition()->enhancedrubric_criteria[$id]['levels'][$record['levelid']]['score'];
+                if ($score < $minscores[$id]) {
+                    $meetsallminscores = false;
+                }
+                $curscore += $score;
             }
-            $curscore += $score;
         }
 
         $options = $this->get_controller()->get_options();

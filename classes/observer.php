@@ -38,7 +38,7 @@ class observer {
         $grade = $assign->get_user_grade($userid, true);
 
         if ($grade->grade == -1) {
-            return;
+           // return;
         }
 
         $gradingdisabled = $assign->grading_disabled($userid);
