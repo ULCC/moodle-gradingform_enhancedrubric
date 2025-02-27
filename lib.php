@@ -970,13 +970,6 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
         return true;
     }
 
-    public function submit_and_get_grade($elementvalue, $itemid) {
-        $elementvalue['itemid'] = $itemid;
-        $this->update($elementvalue);
-        $this->make_active();
-        return $this->get_grade();
-    }
-
     /**
      * Removes the attempt from the gradingform_guide_fillings table
      * @param array $data the attempt data
@@ -1175,7 +1168,7 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
      * @return float|int the valid grade from $this->get_controller()->get_grade_range()
      */
     public function get_grade() {
-        global $DB;
+        global $DB, $USER;
 
         $graderange = array_keys($this->get_controller()->get_grade_range());
         if (empty($graderange)) {
@@ -1185,7 +1178,7 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
         // The grade is being saved so write the history.
         $definitionid = $this->get_data('definitionid');
         $instanceid = $this->get_data('id');
-        $raterid = $this->get_data('raterid');
+        $raterid = $USER->id;//$this->get_data('raterid');
         $itemid = $this->get_data('itemid');
 
         $history = $DB->get_record(
@@ -1201,14 +1194,14 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
             $history = new stdClass();
             $history->definitionid = $this->get_data('definitionid');
             $history->instanceid = $this->get_data('id');
-            $history->raterid = $this->get_data('raterid');
+            $history->raterid = $raterid;
             $history->itemid = $this->get_data('itemid');
             $history->rawgrade = null;
             $history->status = $this->get_data('status');
             $history->workflowstatus = $this->workflowstatus ?: 'notmarked';
             $history->feedback = $this->get_data('feedback');
             $history->feedbackformat = $this->get_data('feedbackformat');
-            $history->timemodified = $this->get_data('timemodified');
+            $history->timemodified = time();
             $history->id = $DB->insert_record('enhancedrubric_history', $history);
         }
 
