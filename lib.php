@@ -1494,7 +1494,7 @@ class gradingform_enhancedrubric_instance extends gradingform_instance {
         if ($this->hasarchiveinstances === null) {
             $params = ['itemid' => $this->get_data('itemid')];
             $total = $DB->count_records('enhancedrubric_history', $params);
-            if ($total > 1) {
+            if ($total >= 1) {
                 $this->hasarchiveinstances = true;
             }
         }
